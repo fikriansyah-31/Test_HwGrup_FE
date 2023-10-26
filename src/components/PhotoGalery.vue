@@ -1,94 +1,127 @@
 <template>
-    <div class="photo-gallery">
-      <div v-for="(photo, index) in mainPhotos" :key="index" class="main-photo">
-        <img :src="photo.image_url" :alt="photo.title" @click="openLightbox(index)" />
-      </div>
-  
-      <div class="lightbox" v-if="lightboxOpen">
-        <span class="close-button" @click="closeLightbox">×</span>
-        <img :src="photos[currentPhotoIndex].image_url" :alt="photos[currentPhotoIndex].title" />
+  <div>
+    <div class="image-gallery">
+      <div class="lightbox-content">
+        <div v-for="(item, index) in jsonData" :key="index">
+          <div class="gallery-item" @click="openLightbox(item)">
+            <img :src="item.image_url" alt="Gambar" class="lightbox-trigger" />
+          </div>
+        </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import axios from "axios";
-  
-  export default {
-    data() {
-      return {
-        photos: [],
-        mainPhotos: [],
-        lightboxOpen: false,
-        currentPhotoIndex: 0,
-      };
-    },
-    created() {
-      axios.get('images.json')
-        .then((response) => {
-          this.photos = response.data;
-          this.mainPhotos = this.photos.slice(0, 6);
-        })
-        .catch((error) => {
-          console.error("Terjadi kesalahan saat mengambil data foto:", error);
-        });
-    },
-    methods: {
-      openLightbox(index) {
-        this.currentPhotoIndex = index;
-        this.lightboxOpen = true;
-      },
-      closeLightbox() {
-        this.lightboxOpen = false;
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .photo-gallery {
-    display: flex;
-    flex-wrap: wrap;
+
+    <div v-if="showLightbox" class="lightbox-modal" @click="closeLightbox">
+      <div class="lightbox-content">
+        <span class="close-button">×</span>
+        <img :src="lightboxImage" alt="Gambar Lightbox" class="lightbox-image" />
+      </div>
+    </div>
+  </div>
+</template>
+<style>
+.image-gallery {
+  display: flex;
+  max-width: 100%;
+  align-items: flex-end; 
+  margin-top: 50px;
+  justify-content: center; 
+  overflow-x: auto;
+}
+
+.lightbox-content {
+  display: flex;
+  align-items: center;
+  overflow: auto;
+}
+
+.gallery-item {
+  cursor: pointer;
+  max-width: 200px;
+  margin-right: 10px; 
+}
+
+.lightbox-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.lightbox-content {
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+.lightbox-image {
+  max-width: 80%;
+  max-height: 80%;
+}
+
+@media (max-width: 768px) {
+  .image-gallery {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
   }
-  
-  .main-photo {
-    flex: 1;
-    margin: 10px;
-    text-align: center;
-    cursor: pointer;
-  }
-  
-  .main-photo img {
+
+  .gallery-item {
     max-width: 100%;
-    height: auto;
+    margin-right: 0;
+    margin-bottom: 20px;
   }
-  
-  .lightbox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+
+  .lightbox-content {
+    align-items: center;
+    text-align: center;
   }
-  
-  .lightbox img {
-    max-width: 90%;
-    max-height: 90%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    color: white;
-    cursor: pointer;
-  }
-  </style>
-  
+}
+
+
+</style>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      jsonData: [],
+      showLightbox: false,
+      lightboxImage: '',
+    };
+  },
+  mounted() {
+    axios.get('images.json')
+      .then(response => {
+        this.jsonData = response.data.slice(0, 5);
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data: ' + error);
+      });
+  },
+  methods: {
+    openLightbox(item) {
+      this.showLightbox = true;
+      this.lightboxImage = item.image_url;
+    },
+    closeLightbox() {
+      this.showLightbox = false;
+      this.lightboxImage = '';
+    },
+  },
+};
+</script>

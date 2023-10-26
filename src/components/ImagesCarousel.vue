@@ -35,7 +35,6 @@
   .carousel-button {
     cursor: pointer;
     padding: 10px 20px;
-    background-color: #0074d9;
     color: white;
     border: none;
     border-radius: 5px;

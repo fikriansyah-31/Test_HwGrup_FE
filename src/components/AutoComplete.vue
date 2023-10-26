@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="nav">
     <input
       v-model="userInput"
       @input="filterSuggestions"
@@ -60,6 +60,7 @@ export default {
 </script>
 
 <style scoped>
+
 .suggestions {
   position: absolute;
   border: 1px solid #ccc;
